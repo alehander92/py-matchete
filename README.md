@@ -1,5 +1,14 @@
 #Matchete
 
+*Really dirty and hacky prototype, don't use*
+
+Overload methods of python classes depending on the behavior of the passed arguments:
+
+* containing an attribute
+* responding to a method call
+* having a type
+* responding to a method call with a certain value
+
 example:
 ```python
 from matchete import on, Any, eq, matchable
