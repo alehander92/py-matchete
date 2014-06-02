@@ -3,6 +3,16 @@ import sys
 
 def on(*guards):
     def decorator(func):
+        # for now, horrible hacky solution
+        # in python the class isn't accessible
+        # at method creation time
+        # so we use the module to save it
+        # after that on first call to the "overloaded" method
+        # we move the dict with the overloading implementations
+        # to the class
+        # that can probably break in 10 ways
+        # but it's good enough for a prototype
+
         mod = sys.modules[func.__module__]
         if not hasattr(mod, '_matchete'):
             mod._matchete = {}
@@ -15,7 +25,6 @@ def on(*guards):
 
 def call_overload(name):
     def match_guard(guard, arg):
-        print(guard, arg)
         if isinstance(guard, str) and len(guard) > 0:
             if guard[0] == '.':
                 return hasattr(arg, guard[1:])
@@ -24,7 +33,6 @@ def call_overload(name):
             else:
                 return guard == arg
         elif isinstance(guard, type):
-            print arg, guard, isinstance(arg, guard)
             return isinstance(arg, guard)
         elif callable(guard):
             return guard(arg)
