@@ -1,12 +1,22 @@
 import sys
 
+__all__ = ['on', 'eq', 'is_in', 'not_eq', 'contains', 'Any', 'matchable']
+
+
+def matchable(_class):
+    mod = sys.modules[_class.__module__]
+    if hasattr(mod, '_matchete'):
+        _class._matchete = mod._matchete
+        del mod._matchete
+    return _class
+
 
 def on(*guards):
     def decorator(func):
         # for now, horrible hacky solution
         # in python the class isn't accessible
         # at method creation time
-        # so we use the module to save it
+        # so we use an attribute in module to save it
         # after that on first call to the "overloaded" method
         # we move the dict with the overloading implementations
         # to the class

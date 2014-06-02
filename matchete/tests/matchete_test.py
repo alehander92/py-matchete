@@ -1,8 +1,10 @@
-from matchete.on import on, Any, eq, is_in, not_eq, contains	
+from matchete.on import on, Any, eq, is_in, not_eq, contains, matchable
 import pytest
+
 
 class TestOn(object):
     def test_decorating_methods(self):
+        @matchable
         class A(object):
             @on(bool)
             def b(self, a):
@@ -11,7 +13,7 @@ class TestOn(object):
             @on(int)
             def b(self, a):
                 return 'int'
-        
+
         a = A()
         assert a.b(2) == 'int'
         assert a.b(False) == 'bool'
@@ -19,6 +21,7 @@ class TestOn(object):
             a.b('x')
 
     def test_matching_attributes(self):
+        @matchable
         class B(object):
             @on('.a')
             def b(self, other):
@@ -28,9 +31,11 @@ class TestOn(object):
             def b(self, other):
                 return 'hh'
 
+        @matchable
         class A(object):
             a = 2
 
+        @matchable
         class Hh(object):
             hh = 4
 
@@ -41,6 +46,7 @@ class TestOn(object):
             b.b('x')
 
     def test_matching_eq(self):
+        @matchable
         class G(object):
             @on(eq('.nick', 'mariela'))
             def b(self, other):
@@ -50,6 +56,7 @@ class TestOn(object):
             def b(self, other):
                 return 1
 
+        @matchable
         class Woman(object):
             def __init__(self, nick):
                 self.nick = nick
@@ -62,4 +69,3 @@ class TestOn(object):
         assert g.b(krasimira) == 1
         with pytest.raises(NotImplementedError):
             g.b(2)
-

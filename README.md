@@ -2,9 +2,10 @@
 
 example:
 ```python
-from matchete import on, Any, eq
+from matchete import on, Any, eq, matchable
 
-class A(self):
+@matchable
+class A(object):
     @on('#meow')
     def a(self, cat):
         cat.meow()
@@ -17,11 +18,12 @@ class A(self):
     def a(self, white):
         return True
 
-class Matcher(self):
+@matchable
+class Matcher(object):
     @on('#node_type', '#node_type')
     def match(self, left, right):
         code
-    
+
     @on('#node_type', Any)
     def match(self, left, right):
         other_code
