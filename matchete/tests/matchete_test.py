@@ -45,6 +45,25 @@ class TestOn(object):
         with pytest.raises(NotImplementedError):
             b.b('x')
 
+    def test_matching_lists(self):
+        @matchable
+        class A(object):
+            @on([int])
+            def join(self, elements):
+                return ' '.join(str(e) for e in elements)
+
+            @on([str])
+            def join(self, elements):
+                return ''.join(elements)
+
+        a = A()
+        assert a.join([2, 4]) == '2 4'
+        assert a.join(['2', '4']) == '24'
+        assert a.join([]) == ''
+        with pytest.raises(NotImplementedError):
+            a.join([2, 'x'])
+
+
     def test_matching_eq(self):
         @matchable
         class G(object):

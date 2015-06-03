@@ -8,6 +8,8 @@ Overload methods of python classes depending on the behavior of the passed argum
 * responding to a method call
 * having a type
 * responding to a method call with a certain value
+* having the same list structure
+
 
 example:
 ```python
@@ -36,4 +38,24 @@ class Matcher(object):
     @on('#node_type', Any)
     def match(self, left, right):
         other_code
+
+@matchable
+class Combinator(object):
+    @on([str])
+    def combine(self, values):
+        return ''.join(values)
+
+    @on([int])
+    def combine(self, values):
+        return ' '.join(str(v) for v in values)
+
+    @on(is_in('.value', range(0, 10)])
+    def combine(self, value):
+        return str(value)
+
 ```
+
+Install
+-------
+
+`pip install matchete`

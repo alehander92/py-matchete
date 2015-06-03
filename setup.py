@@ -2,7 +2,7 @@
 from distutils.core import setup
 
 setup(name='matchete',
-      version='0.0.2',
+      version='0.4.0',
       description='Python simple pattern-matching based method overloading',
       author='Alexander Ivanov',
       author_email='alehander42@gmail.com',

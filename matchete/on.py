@@ -1,4 +1,5 @@
 import sys
+from collections import defaultdict
 
 __all__ = ['on', 'eq', 'is_in', 'not_eq', 'contains', 'Any', 'matchable']
 
@@ -25,17 +26,15 @@ def on(*guards):
 
         mod = sys.modules[func.__module__]
         if not hasattr(mod, '_matchete'):
-            mod._matchete = {}
-        if func.__name__ not in mod._matchete:
-            mod._matchete[func.__name__] = []
+            mod._matchete = defaultdict(list, [])
         mod._matchete[func.__name__].append((guards, func))
-        return call_overload(func.__name__)
+        return call_overloaded(func.__name__)
     return decorator
 
 
-def call_overload(name):
+def call_overloaded(name):
     def match_guard(guard, arg):
-        if isinstance(guard, str) and len(guard) > 0:
+        if isinstance(guard, str) and guard[1:]:
             if guard[0] == '.':
                 return hasattr(arg, guard[1:])
             elif guard[0] == '#':
@@ -46,6 +45,11 @@ def call_overload(name):
             return isinstance(arg, guard)
         elif callable(guard):
             return guard(arg)
+        elif isinstance(guard, list) and len(guard) == 1:
+            return all(match_guard(guard[0], child) for child in arg)
+        elif isinstance(guard, list):
+            return all(match_guard(child_guard, child_arg)
+                       for child_guard, child_arg in zip(guard, arg))
         else:
             return guard == arg
 
@@ -55,9 +59,11 @@ def call_overload(name):
             delattr(sys.modules[self.__module__], '_matchete')
         # find method
         for guards, function in self.__class__._matchete[name]:
-            if len(guards) <= len(args) and all([match_guard(guard, arg) for guard, arg in zip(guards, args)]):
+            if len(guards) <= len(args)\
+               and all(match_guard(guard, arg)
+                       for guard, arg in zip(guards, args)):
                 return function(self, *args, **kwargs)
-        raise NotImplementedError("%s with %s not matching" % (name, str(args)))
+        raise NotImplementedError("%s with %s fails to match guards" % (name, str(args)))
 
     return wrapper
 
